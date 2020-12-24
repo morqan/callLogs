@@ -68,5 +68,43 @@ export default StyleSheet.create({
     height: width * 0.09,
     width: width * 0.09,
     resizeMode: 'contain'
-  }
+  },
+  addBtnBox: {
+    backgroundColor: '#1e88e5',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: width * 0.18,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  addBtn: {
+    backgroundColor: '#fff',
+    borderRadius: 100,
+    height: width * 0.15,
+    width: width * 0.15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: width * 0.15,
+
+  },
+  addBtnText: {
+    fontSize: width * 0.1,
+    fontWeight: '900',
+    marginBottom: 5,
+    color: '#1e88e5',
+  },
+  modalBox: {
+    backgroundColor: '#fff',
+    padding: width * 0.08,
+    borderRadius: 10
+  },
+  phoneInput: {
+    fontSize: width * 0.037,
+    width: '100%',
+    backgroundColor: '#f4f6f8',
+    paddingHorizontal: width * 0.05,
+    paddingVertical: width * 0.04,
+    borderRadius: 10
+  },
 })

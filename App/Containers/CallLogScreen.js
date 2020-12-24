@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-import { Text, View, FlatList, Image, Linking } from 'react-native'
+import { Text, View, FlatList, Image, Linking, Button } from 'react-native'
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
-import Icon from 'react-native-vector-icons/AntDesign'
 import UserAvatar from 'react-native-user-avatar';
 import { PermissionsAndroid } from 'react-native';
 import CallLogs from 'react-native-call-log'
 import { Images } from '../Themes'
 import {RectButton} from "react-native-gesture-handler";
+import Modal from 'react-native-modal';
+import PhoneInput from 'react-native-phone-input'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
@@ -24,7 +25,8 @@ class CallLogScreen extends Component {
       error: null,
       next: '',
       loading: true,
-      limit: 'limit=10&page=1'
+      isModalVisible: false,
+      newPhone: ''
     }
   }
 
@@ -62,7 +64,6 @@ class CallLogScreen extends Component {
     const name = item.name ? item.name : item.phoneNumber
     const phone = item.phoneNumber
     return (
-
         <View orderId={item.index} style={styles.orderBox}>
           <UserAvatar size={65} name={name} />
           <View style={styles.callInfo}>
@@ -78,33 +79,80 @@ class CallLogScreen extends Component {
                 <Image source={Images.whatsAppLogo} style={styles.mediumLogo} />
               </View>
              </RectButton>
-            <Image source={Images.whatsAppLogo} style={styles.mediumLogo} />
+            {/*<Image source={Images.whatsAppLogo} style={styles.mediumLogo} />*/}
           </View>
         </View>
 
     )
   };
 
-  renderContent = () => {
+  renderFlatList = () => {
     const {data} = this.state
     if (data.length !== 0) {
-      return <View><FlatList
-        renderItem={this.renderOrdersItem}
-        keyExtractor={(item, index) => index.toString()}
-        // onScrollEndDrag={this.getNextItems}
-        data={data} disableVirtualization /></View>
-    } else {
+      return (
+          <View>
+            <FlatList
+            renderItem={this.renderOrdersItem}
+            keyExtractor={(item, index) => index.toString()}
+            // onScrollEndDrag={this.getNextItems}
+            data={data} disableVirtualization
+            ListFooterComponent={<View style={{ height: 0, marginBottom: 90 }}></View>}/>
+        </View>
+    ) } else {
       return <View style={styles.zeroOrderBox}><Text style={styles.zeroOrder}>Sizin heç bir sifarişiniz yoxdur.</Text></View>
     }
   }
 
+  onChangePhoneNumber = () => {
+    this.setState({
+      countryCode: this.phone.getCountryCode(),
+      newPhone: this.phone.getValue()
+    })
+  }
+
+  openModal = () => {
+    this.setState({
+      isModalVisible: true
+    })
+  }
+  goToWhatsApp = () => {
+    const {newPhone} = this.state
+    console.log(newPhone)
+    this.setState({
+      isModalVisible: !this.state.isModalVisible,
+
+    })
+
+    Linking.openURL(`https://wa.me/${newPhone}`)
+  }
   render () {
-    if (this.state.loading === true) {
+    const {isModalVisible, loading, newPhone} = this.state
+    if (loading) {
       return <Spinner size='large' />
     }
     return (
       <View style={styles.container}>
-        {this.renderContent()}
+        {this.renderFlatList()}
+        <View style={styles.addBtnBox}>
+          <RectButton style={styles.addBtn} onPress={this.openModal}>
+            <View accessible>
+              <Text style={styles.addBtnText}>+</Text>
+            </View>
+          </RectButton>
+        </View>
+        <Modal isVisible={isModalVisible}>
+          <View style={styles.modalBox}>
+            <PhoneInput
+              onChangePhoneNumber={this.onChangePhoneNumber} initialCountry='az' flagStyle={{borderRadius: 10}}
+              value={newPhone} style={styles.phoneInput} ref={ref => { this.phone = ref }} />
+            {/*<RectButton style={styles.addBtn} onPress={this.goToWhatsApp}>*/}
+            {/*  <View accessible>*/}
+            {/*    <Text style={styles.addBtnText}>wh</Text>*/}
+            {/*  </View>*/}
+            {/*</RectButton>*/}
+            <Button title="Hide modal" onPress={this.goToWhatsApp} />
+          </View>
+        </Modal>
       </View>
     )
   }
