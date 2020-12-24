@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Text, View, FlatList, Image, Linking, Button } from 'react-native'
+import { Text, View, FlatList, Image, Linking, TouchableOpacity, BackHandler } from 'react-native'
 import { connect } from 'react-redux'
 import Spinner from '../Components/Spinner'
 import UserAvatar from 'react-native-user-avatar';
@@ -30,7 +30,8 @@ class CallLogScreen extends Component {
     }
   }
 
-  componentDidMount =  async() => {
+  componentDidMount = async () => {
+    const {navigation} = this.props;
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
@@ -57,7 +58,30 @@ class CallLogScreen extends Component {
     catch (e) {
       console.log(e);
     }
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    navigation.addListener ('willFocus', () =>{
+      // do whatever you want to do when focused
+      BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+
+    });
+
   }
+
+  componentWillUnmount() {
+    // this.closeApp.remove();
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    console.log('componentWillUnmount')
+  }
+
+  handleBackButton = () =>{
+    //add your code
+    console.log(this.props.navigation.isFocused(), 'test')
+    let { routeName } = this.props.navigation.state;
+    const {isModalVisible} = this.state
+    console.log(routeName)
+    BackHandler.exitApp();
+    return true;
+  };
 
   renderOrdersItem = ({item}) => {
     item.created = new Date(item.created)
@@ -140,7 +164,14 @@ class CallLogScreen extends Component {
             </View>
           </RectButton>
         </View>
-        <Modal isVisible={isModalVisible}>
+        <Modal isVisible={isModalVisible}
+               onBackdropPress={() => {
+                 this.setState({isModalVisible: !this.state.isModalVisible})
+               }}
+               onBackButtonPress={() => {
+                 this.setState({isModalVisible: !this.state.isModalVisible})
+               }}
+        >
           <View style={styles.modalBox}>
             <PhoneInput
               onChangePhoneNumber={this.onChangePhoneNumber} initialCountry='az' flagStyle={{borderRadius: 10}}
@@ -150,7 +181,12 @@ class CallLogScreen extends Component {
             {/*    <Text style={styles.addBtnText}>wh</Text>*/}
             {/*  </View>*/}
             {/*</RectButton>*/}
-            <Button title="Hide modal" onPress={this.goToWhatsApp} />
+
+
+            <TouchableOpacity style={styles.whAppBtn} activeOpacity={0.5} onPress={this.goToWhatsApp}>
+              <Image source={Images.whatsAppLogo}
+                     style={styles.whaAppWhite} />
+            </TouchableOpacity>
           </View>
         </Modal>
       </View>

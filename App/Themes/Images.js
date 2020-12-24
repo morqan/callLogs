@@ -21,6 +21,7 @@ const images = {
   backButton: require('../Images/Icons/back-button.png'),
   closeButton: require('../Images/Icons/close-button.png'),
   whatsAppLogo: require('../Images/whatsapp-logo.png'),
+  whaAppWhite: require('../Images/whAppwhite.png'),
 
 
 }

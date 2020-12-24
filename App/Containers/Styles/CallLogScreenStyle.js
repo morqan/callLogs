@@ -107,4 +107,17 @@ export default StyleSheet.create({
     paddingVertical: width * 0.04,
     borderRadius: 10
   },
+  whaAppWhite: {
+    height: width * 0.09,
+    width: width * 0.09,
+    resizeMode: 'contain'
+  },
+  whAppBtn: {
+    backgroundColor: '#25d366',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: width * 0.04,
+    paddingVertical: width * 0.04,
+    borderRadius: 10
+  }
 })
